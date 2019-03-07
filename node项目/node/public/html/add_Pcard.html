@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>添加储值卡</title>
+	<link type="text/css" rel="stylesheet" href="/stylesheets/fontsawesome/css/font-awesome.css" />
+	<link type="text/css" rel="stylesheet" href="/stylesheets/css/style.css" />
+	<link type="text/css" rel="stylesheet" href="/stylesheets/css/datepicker.css" />
+</head>
+
+<body>
+	<div class="main_box">
+		<div class="cont_box editpro_box">
+			<form action="#" method="post" id="pcard_form">
+				<ul class="addpro_box adduser_box">
+					<li>
+						<label>充值金额：</label>
+						<input type="text" value="0" name="card_yue"/>
+					</li>
+					<li>
+						<label>卡片折扣：</label>
+						<input type="text" name="card_zhekou" />
+					</li>
+					<li>
+						<label>销售人员：</label>
+						<select name="xiaoshou">
+							<option value="">无销售</option>
+						<select>
+					</li>
+					<li>
+						<label>卡号：</label>
+						<input type="text" placeholder="请输储值卡卡号" name="card_id" required data-rule-procode="true" data-msg-required="储值卡卡号不能为空" />
+					</li>
+					<li>
+						<label>是否支付：</label>
+						<div class="radio_box">
+							<i class="fa fa-check-circle fa-1x"></i>
+							<input type="radio" name="zhifu" class="input_radio"  value="1" /><span>已支付</span>
+						</div>
+						<div class="radio_box">
+							<i class="fa fa-circle-thin fa-1x"></i>
+							<input type="radio" checked="checked" name="zhifu" class="input_radio" value="0" /><span>未支付</span>
+						</div>
+					</li>
+				</ul>
+				<div class="probtn_box clearfix">
+					<input type="button" id="" value="添加储值卡" class="btn blue_btn submit_addcar" />
+				</div>
+			</form>
+		</div>
+	</div>
+	<!--javascript include-->
+	<script src="/javascripts/jquery-2.2.1.min.js"></script>
+	<script src="/javascripts/jquery.dataTables.min.js"></script>
+	<script src="/javascripts/bootstrap-datepicker.js"></script>
+	<script src="/javascripts/jquery.validate.min.js"></script>
+	<script src="/javascripts/jquery.form.min.js"></script>
+	<script src="/javascripts/jquery.cxselect.min.js"></script>
+	<script src="/javascripts/other.js"></script>
+	<script>
+		$(function () {
+			$("body").other({
+				formId: "#pcard_form",
+				formUrl: "/api/user/inster_userchucuncard"
+			}); //formUrl 表单请求地址,linkHref 请求成功后跳转地址，此页面不需要，已删除
+			id_ = window.location.href.split('=')[1];
+			$('.submit_addcar').attr('id', id_)
+
+				// 渲染所有销售人员
+				$.ajax({
+				type: 'post',
+				url: '/api/card/select_yuangongxiaoshou',
+				data: {
+					'post': '销售'
+				},
+				success: function (e) {
+					var res = JSON.parse(e);
+					// debugger
+					var html = '';
+					for (var i in res.data) {
+						html += `<option value="${res.data[i].id}">${res.data[i].name}</option>`
+					}
+					$('[name="xiaoshou"]').append(html)
+				}
+			})
+		});
+	</script>
+</body>
+
+</html>
