@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>会员添加</title>
+	<link type="text/css" rel="stylesheet" href="/stylesheets/fontsawesome/css/font-awesome.css" />
+	<link type="text/css" rel="stylesheet" href="/stylesheets/css/style.css" />
+	<link type="text/css" rel="stylesheet" href="/stylesheets/css/datepicker.css" />
+</head>
+
+<body>
+	<div class="main_box">
+		<h2><span></span>会员添加</h2>
+		<div class="cont_box">
+			<form>
+				<ul class="addpro_box adduser_box">
+					<li>
+						<label>姓名：</label>
+						<input type="text" placeholder="请输入姓名" name="fullname" required data-rule-fullname="true" data-msg-required="会员姓名不能为空" />
+					</li>
+					<li>
+						<label>手机号：</label>
+						<input type="text" placeholder="请输入手机号" name="mobile" required data-rule-mobile="true" data-msg-required="会员手机号不能为空" />
+					</li>
+					<li>
+						<label>性别：</label>
+						<div class="radio_box">
+							<i class="fa fa-circle-thin fa-1x"></i>
+							<input type="radio" name="sex" class="input_radio" value="男" required data-msg-required="性别不能为空" /><span>男</span>
+						</div>
+						<div class="radio_box">
+							<i class="fa fa-circle-thin fa-1x"></i>
+							<input type="radio" value="女" name="sex" class="input_radio" /><span>女</span>
+						</div>
+					</li>
+					<li>
+						<label>车牌：</label>
+						<input type="text" placeholder="请输入车牌号码" name="isCarNo" required data-rule-isCarNo="true" data-msg-required="车牌号码不能为空" />
+					</li>
+					<li>
+						<label>行驶里程：</label>
+						<input type="text" placeholder="请输入行驶里程" name="mileage" required data-rule-mileage="true" data-msg-required="行驶里程不能为空" />
+					</li>
+					<li>
+						<label>保险到期日：</label>
+						<input type="text" class="choose_date" placeholder="请选择保险到期日" name="chdate" readonly required data-msg-required="保险到期日不能为空" />
+					</li>
+					<li>
+						<label>车品牌型号：</label>
+						<div class="select_group" id="carmodel">
+							<select name="carbrand" class="carbrand" required data-msg-required="车品牌型号不能为空">
+								<option value="">请选择</option>
+							</select>
+							<select name="carmodela" class="carmodela">
+								<option value="">请选择</option>
+							</select>
+							<select name="carmodelb" class="carmodelb">
+								<option value="">请选择</option>
+							</select>
+							<!-- <select name="carmodelc" class="carmodelc">
+								<option value="">请选择</option>
+							</select> -->
+						</div>
+					</li>
+					<li>
+						<label>备注：</label>
+						<textarea rows="3" name="detail"></textarea>
+					</li>
+				</ul>
+				<div class="probtn_box clearfix">
+					<input type="button" value="添加会员" class="btn blue_btn" />
+				</div>
+			</form>
+		</div>
+	</div>
+	<!--javascript include-->
+	<script src="/javascripts/jquery-2.2.1.min.js"></script>
+	<script src="/javascripts/jquery.dataTables.min.js"></script>
+	<script src="/javascripts/bootstrap-datepicker.js"></script>
+	<script src="/javascripts/jquery.validate.min.js"></script>
+	<script src="/javascripts/jquery.form.min.js"></script>
+	<script src="/javascripts/jquery.cxselect.min.js"></script>
+	<script src="/javascripts/other.js"></script>
+	<script>
+		$(function () {
+			// $("body").other({formId:"#user_form",formUrl:"#",linkHref:""});//formUrl 表单请求地址,linkHref 请求成功后跳转地址，可不填
+			$("#carmodel").cxSelect({
+				url: "/javascripts/carModel.json",
+				selects: ["carbrand", "carmodela", "carmodelb"],
+				emptyStyle: "none"
+			});
+
+
+			$('.blue_btn').on('click', function () {
+				var a = $("[name='fullname']").val();
+				var b = $("[name='mobile']").val();
+				var c = $("[name='isCarNo']").val();
+				var d = $("[name='mileage']").val();
+				var e = $("[name='chdate']").val();
+				var f = $("[name='carmodelb']").val();
+				var g = $("[name='detail']").val();
+				console.log(a, b, c, d, e, f, g);
+				$.ajax({
+					type: 'post',
+					url: '/api/user/add_user',
+					data: {
+						'username': a,
+						'phone': b,
+						'sex':$('[name="sex"]').val(),
+						'beizhu': g
+					},
+					success: function (e) {
+						var id_ = '';
+						console.log(e);
+						// debugger
+						var res = JSON.parse(e);
+						console.log(res.data[0])
+						var aa=res.data;
+						if (res.code == 0) {
+							// alert('添加成功')
+							// id_ = parseInt(res.data[0]);
+							$.ajax({
+								type: 'post',
+								url: '/api/user/add_userinfo',
+								data: {
+									'car_number': c,
+									'car_licheng': d,
+									'baoxian_time':$("[name='chdate']").val() ,
+									'user_id': aa,
+									'brand': $('[name="carbrand"]').val(),
+									'xilie': $('[name="carmodela"]').val(),
+									'xinghao': $('[name="carmodelb"]').val()
+
+								},
+								success: function (e) {
+									var res = JSON.parse(e);
+									// debugger
+									if(res.code==0){
+										alert('添加成功')
+									}
+								}
+							})
+						}
+
+					},
+					error: function (e) {
+						console.log(e);
+						debugger
+					}
+				})
+			})
+
+		});
+	</script>
+</body>
+
+</html>

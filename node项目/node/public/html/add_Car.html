@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>添加爱车</title>
+	<link type="text/css" rel="stylesheet" href="/stylesheets/fontsawesome/css/font-awesome.css" />
+	<link type="text/css" rel="stylesheet" href="/stylesheets/css/style.css" />
+	<link type="text/css" rel="stylesheet" href="/stylesheets/css/datepicker.css" />
+</head>
+
+<body>
+	<div class="main_box">
+		<div class="cont_box editpro_box">
+			<form action="#" method="post" id="user_form">
+				<ul class="addpro_box adduser_box">
+					<li>
+						<label>车牌号：</label>
+						<input type="text" placeholder="请输入车牌号码" name="car_number" required data-rule-isCarNo="true" data-msg-required="车牌号码不能为空" />
+					</li>
+					<li>
+						<label>行驶里程：</label>
+						<input type="text" placeholder="请输入行驶里程" name="car_licheng" required data-rule-mileage="true" data-msg-required="行驶里程不能为空" />
+					</li>
+					<li>
+						<label>保险到期日：</label>
+						<input type="text" class="choose_date" placeholder="请选择保险到期日" name="baoxian_time" readonly required
+						 data-msg-required="保险到期日不能为空" />
+					</li>
+					<li>
+						<label>车品牌型号：</label>
+						<div class="select_group" id="carmodel">
+							<select name="brand" class="carbrand" required data-msg-required="车品牌型号不能为空">
+								<option value="">请选择</option>
+							</select>
+							<select name="xilie" class="carmodela" required data-msg-required="车品牌型号不能为空">
+								<option value="">请选择</option>
+							</select>
+							<select name="xinghao" class="carmodelb" required data-msg-required="车品牌型号不能为空">
+								<option value="">请选择</option>
+							</select>
+							<!-- <select name="carmodelc" class="carmodelc" required data-msg-required="车品牌型号不能为空">
+									<option value="">请选择</option> 
+								</select>-->
+						</div>
+					</li>
+				</ul>
+				<div class="probtn_box clearfix">
+					<input type="button" id="" value="添加爱车" class="btn blue_btn submit_addcar" />
+				</div>
+			</form>
+		</div>
+	</div>
+	<!--javascript include-->
+	<script src="/javascripts/jquery-2.2.1.min.js"></script>
+	<script src="/javascripts/jquery.dataTables.min.js"></script>
+	<script src="/javascripts/bootstrap-datepicker.js"></script>
+	<script src="/javascripts/jquery.validate.min.js"></script>
+	<script src="/javascripts/jquery.form.min.js"></script>
+	<script src="/javascripts/jquery.cxselect.min.js"></script>
+	<script src="/javascripts/other.js"></script>
+	<script>
+		$(function () {
+			$("body").other({
+				formId: "#user_form",
+				formUrl: "/api/user/inster_usercar"
+			}); //formUrl 表单请求地址,linkHref 请求成功后跳转地址，此页面不需要，已删除
+			$("#carmodel").cxSelect({
+				url: "/javascripts/carModel.json",
+				selects: ["carbrand", "carmodela", "carmodelb"],
+				emptyStyle: "none"
+			});
+			id_ = window.location.href.split('=')[1];
+			$('.submit_addcar').attr('id', id_)
+		});
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>预售卡</title>
+	<link type="text/css" rel="stylesheet" href="/stylesheets/fontsawesome/css/font-awesome.css" />
+	<link type="text/css" rel="stylesheet" href="/stylesheets/css/style.css" />
+</head>
+
+<body>
+	<div class="main_box">
+		<h2><span></span>添加预售卡</h2>
+		<div class="cont_box">
+			<form>
+				<ul class="addpro_box">
+					<li>
+						<label>预售卡卡种：</label>
+						<select name="presell" required data-msg-required="预售卡卡种不能为空">
+							<option value="">请选择</option>
+							<option value="1">储值卡</option>
+							<option value="0">年卡</option>
+							<select>
+					</li>
+					<!-- <li>
+							<label>储值卡种类：</label>
+							<select name="stored" required data-msg-required="储值卡种类不能为空">
+								<option value="">请选择</option>
+								<option value="1">储值卡种类一</option>
+								<option value="2">储值卡种类二</option>
+							<select>
+						</li> -->
+					<!-- <li>
+							<label>年卡种类：</label>
+							<select name="yearcard" required data-msg-required="年卡种类不能为空">
+								<option value="">请选择</option>
+								<option value="1">年卡种类一</option>
+								<option value="2">年卡种类二</option>
+							<select>
+						</li> -->
+					<li>
+						<label>卡号：</label>
+						<input type="text" placeholder="请输入预售卡卡号" name="sellcard" required data-rule-sellcard="true" data-msg-required="预售卡卡号不能为空" />
+					</li>
+					<li>
+						<label>充值金额：</label>
+						<input type="text" name="pricein" />
+					</li>
+					<li>
+						<label>是否支付：</label>
+						<div class="radio_box">
+							<i class="fa fa-check-circle fa-1x"></i>
+							<input type="radio" name="pay" class="input_radio"  value="1" /><span>已支付</span>
+						</div>
+						<div class="radio_box">
+							<i class="fa fa-circle-thin fa-1x"></i>
+							<input type="radio" checked="checked" name="pay" class="input_radio" value="0" /><span>未支付</span>
+						</div>
+					</li>
+					<li>
+						<label>销售：</label>
+						<select name="staff">
+							<option value="">请选择</option>
+							<!-- <option value="1">张三</option>
+							<option value="2">李四</option> -->
+							<select>
+					</li>
+				</ul>
+				<div class="probtn_box clearfix">
+					<input type="button" id="lu" value="添加" class="btn blue_btn submit" />
+				</div>
+			</form>
+		</div>
+	</div>
+	<!--javascript include-->
+	<script src="/javascripts/jquery-2.2.1.min.js"></script>
+	<script src="/javascripts/jquery.dataTables.min.js"></script>
+	<script src="/javascripts/bootstrap-datepicker.js"></script>
+	<script src="/javascripts/jquery.validate.min.js"></script>
+	<script src="/javascripts/jquery.form.min.js"></script>
+	<script src="/javascripts/other.js"></script>
+	<script>
+		$(function () {
+			// 渲染所有销售人员
+			$.ajax({
+				type: 'post',
+				url: '/api/card/select_yuangongxiaoshou',
+				data: {
+					'post': '销售'
+				},
+				success: function (e) {
+					var res = JSON.parse(e);
+					// debugger
+					var html = '';
+					for (var i in res.data) {
+						html += `<option value="${res.data[i].id}">${res.data[i].name}</option>`
+					}
+					$('[name="staff"]').append(html)
+				}
+			})
+
+			//获取当前时间，格式YYYY-MM-DD
+			function getNowFormatDate() {
+				var date = new Date();
+				var seperator1 = "-";
+				var year = date.getFullYear();
+				var month = date.getMonth() + 1;
+				var strDate = date.getDate();
+				if (month >= 1 && month <= 9) {
+					month = "0" + month;
+				}
+				if (strDate >= 0 && strDate <= 9) {
+					strDate = "0" + strDate;
+				}
+				var currentdate = year + seperator1 + month + seperator1 + strDate;
+				return currentdate;
+			}
+
+			function getEndFormatDate() {
+				var date = new Date();
+				var seperator1 = "-";
+				var year = date.getFullYear()+1;
+				var month = date.getMonth() + 1;
+				var strDate = date.getDate();
+				if (month >= 1 && month <= 9) {
+					month = "0" + month;
+				}
+				if (strDate >= 0 && strDate <= 9) {
+					strDate = "0" + strDate;
+				}
+				var currentdate = year + seperator1 + month + seperator1 + strDate;
+				return currentdate;
+			}
+
+			//添加卡片
+			var tabname;
+			$('#lu')[0].onclick = function () {
+				// debugger
+				var a = $('[name="presell"]').val();//种类
+				var b = $('[name="sellcard"]').val();//卡号
+				var c = $('[name="pricein"]').val();//金额
+				var d = $('[name="pay"]:checked').val();//是否支付
+				var e = $('[name="staff"]').val();//销售员
+				if (a == 0) {
+					tabname = 'year_card'
+				}
+				if (a == 1) {
+					tabname = 'chucun_card'
+				}
+				console.log(a, tabname)
+				if (tabname == 'year_card') {
+					// 年卡
+					$.ajax({
+						type: 'post',
+						url: '/api/card/add_yearcard',
+						data: {
+							'card_id':b,
+							'card_edu':c,
+							'start_time':getNowFormatDate(),
+							'state':1,
+							'dianpu':'西航店',
+							'xiaoshou':e,
+							'zhifu':d,
+							'end_time':getEndFormatDate()
+						},
+						success:function(e){
+							var res=JSON.parse(e);
+							// debugger
+							if(res.code==0){
+								alert('添加年卡成功')
+							}
+						}
+					})
+				}
+				if (tabname == 'chucun_card') {
+					// 储存卡
+					$.ajax({
+						type: 'post',
+						url: '/api/card/add_chucuncard',
+						data: {
+							'card_id':b,
+							'card_yue':c,
+							'card_zhekou':'8',
+							'dianpu':'西航店',
+							'zhifu':d,
+							'xiaoshou':e
+						},
+						success:function(e){
+							var res=JSON.parse(e);
+							// debugger
+							if(res.code==0){
+								alert('添加储存卡成功')
+							}
+						}
+					})
+				}
+			}
+
+
+
+		});
+	</script>
+</body>
+
+</html>
